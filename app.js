@@ -7,15 +7,15 @@ const ejs = require("ejs");
 
 const mongoose = require("mongoose");
 
-const url = "mongodb://localhost:27017/";
+const url = "mongodb+srv://admin:admin@cluster0.bibps.mongodb.net/blogDB";
 
-mongoose.connect("mongodb://localhost:27017/blogDB", {
+mongoose.connect(url, {
   useNewUrlParser: true,
   useUnifiedTopology: true
-},function(err){
-  if(err){
+}, function (err) {
+  if (err) {
     console.log(err);
-  }else{
+  } else {
     console.log("connected successfully");
   }
 });
@@ -28,13 +28,11 @@ const contactContent = "Scelerisque eleifend donec pretium vulputate sapien. Rho
 const app = express();
 
 const postSchema = mongoose.Schema({
-  title : String,
-  body : String
+  title: String,
+  body: String
 });
 
 const Post = mongoose.model("Post", postSchema);
-
-
 
 
 app.set('view engine', 'ejs');
@@ -46,21 +44,18 @@ app.use(express.static("public"));
 
 app.get("/", function (req, res) {
 
-  Post.find({},function(err,items_found){
-    if(err){
+  Post.find({}, function (err, items_found) {
+    if (err) {
       console.log(err);
-    }
-    else{
+    } else {
       res.render("home", {
         paragraph: homeStartingContent,
         jsObject: items_found
       });
-    
+
     }
   })
 
-
-  // console.log(posts);
 })
 
 app.get("/about", function (req, res) {
@@ -81,24 +76,19 @@ app.get("/compose", function (req, res) {
 
 
 app.get("/posts/:testparam/id/:testid", function (req, res) {
-  console.log(req.params.testparam);
-  console.log(req.params.testid);
-
   const curr_param = req.params.testparam;
   const curr_id = req.params.testid;
 
-  Post.findOne({_id:curr_id}, function(err, item_found){
-    if(!err){
-      console.log(item_found);
+  Post.findOne({
+    _id: curr_id
+  }, function (err, item_found) {
+    if (!err) {
       res.render("post", {
-        title:  item_found.title,
+        title: item_found.title,
         body: item_found.body
       })
-
     }
   })
-
-
 
 
 })
@@ -120,6 +110,14 @@ app.post("/compose", function (req, res) {
 })
 
 
-app.listen(3000, function () {
+let port = "";
+
+port = process.env.PORT;
+
+if (port == "" || port == null) {
+  port = 3000;
+}
+
+app.listen(port, function () {
   console.log("Server started on port 3000");
 });
